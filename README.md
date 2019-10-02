@@ -32,8 +32,12 @@ then, install the gulp build tool:
 
     cd <potree_directory>
     npm install
-    npm install -g gulp
-    npm install -g rollup
+    npm install gulp
+    npm install rollup
+
+Use the follow line in order to prevent against path issues
+
+	alias npm-exec='PATH=$(npm bin):$PATH'	
 
 Use the ```gulp watch``` command to 
 
@@ -42,7 +46,7 @@ Use the ```gulp watch``` command to
 * start a web server at localhost:1234. 
 
 ```
-gulp watch
+npm run gulp watch
 ```
 
 Go to http://localhost:1234/examples/ to test the examples.
