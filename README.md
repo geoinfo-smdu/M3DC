@@ -1,3 +1,6 @@
+# M3DC
+
+M3DC é um fork do projeto [Potree] (http://potree.org/) que tem o objetivo de disponibiliar os dados LiDar de um sobrevoo realizado em todo o município de São Paulo
 
 # README
 
