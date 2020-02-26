@@ -40,7 +40,13 @@
 	<script>
 		let urlParams = new URLSearchParams(window.location.search);
 		let scm = urlParams.get('scm');
+		let xmax = parseFloat(urlParams.get('xmax'));
+		let ymax = parseFloat(urlParams.get('ymax'));
+		let xmin = parseFloat(urlParams.get('xmin'));
+		let ymin = parseFloat(urlParams.get('ymin'));
+
 		console.log(scm);
+		console.log(xmax, ymax, xmin, ymin);
 		//metadata_json = $.getJSON('metadata/bb_min_max.json', function(data) {
 		//	console.log(data);
 		//	return data;
@@ -56,14 +62,27 @@
 		});
 
 		metadata = metadata_json.responseJSON.find(obj => obj.scm==scm);
+		console.log(metadata);
 
-		minx = metadata.bb.minx;
-		miny = metadata.bb.miny;
-		minz = metadata.bb.minz;
+		//xmax=328283.0&ymax=7395510.0&xmin=327741.0&ymin=7394923.0
 
-		maxx = metadata.bb.maxx;
-		maxy = metadata.bb.maxy;
-		maxz = metadata.bb.maxz;
+		if (metadata) {
+			minx = metadata.bb.minx || xmin || 327741.0;
+			miny = metadata.bb.miny || ymin || 7390886.0;
+			minz = 715.00 || metadata.bb.minz;
+
+			maxx = metadata.bb.maxx || xmax || 334179.0;
+			maxy = metadata.bb.maxy || ymax || 7395579.0;
+			maxz = 1042.00 || metadata.bb.maxz;
+		} else {
+			minx = xmin || 327741.0;
+			miny = ymin || 7390886.0;
+			minz = 715.00;
+
+			maxx = xmax || 334179.0;
+			maxy = ymax || 7395579.0;
+			maxz = 1042.00;
+		}
 
 		centerx = minx + ((maxx - minx)/2);
 		centery = miny + ((maxy - miny)/2);
@@ -87,22 +106,6 @@
 
         var path = "https://entwine3314.s3.amazonaws.com/entwine/ept.json";
 		var name = "entwine3314";
-
-		var getQueryParam = function(name) {
-			name = name.replace(/[\[\]]/g, "\\$&");
-			var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-				results = regex.exec(window.location.href);
-			if (!results || !results[2]) return null;
-			return decodeURIComponent(results[2].replace(/\+/g, " "));
-		}
-
-        var r = getQueryParam('r');
-        if (r) {
-			name = r;
-            var http = 'http';
-            if (r.substr(0, http.length) == http) path = name;
-            else path = "../pointclouds/" + name + "/ept.json";
-        }
 
 		Potree.loadPointCloud(path, name, function(e){
 			let scene = viewer.scene;
@@ -132,7 +135,7 @@
 			node.boundingBox = box;
 
 			// A partir dos valores máximos do bounding box
-			viewer.scene.view.position.set(maxx + 250, maxy + 250, maxz * 2);
+			viewer.scene.view.position.set(maxx + (maxx-minx), maxy + (maxy-miny), maxz + ((maxx-minx) + (maxy-miny))/Math.sqrt(2));
 			
 			// deixar na centroid do BOX
 			viewer.scene.view.lookAt(new THREE.Vector3(centerx, centery, centerz));
